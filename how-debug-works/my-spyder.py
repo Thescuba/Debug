@@ -54,7 +54,11 @@ def debug(command, my_locals):
 
         else:
             print(my_locals)
-        
+    elif command.startswith('b'):
+        if arg:
+            breakpoints[arg] = True
+        else:
+            print("You must supply a line number")
     elif command.startswith('q'):   # quit
         sys.exit(0)
     else:
@@ -62,7 +66,7 @@ def debug(command, my_locals):
         
     return False
 
-commands = ["p", "s", "p tag", "p foo", "q"]
+commands = ["b 5", "c", "c", "q"]
 
 def input_command():
     #command = raw_input("(my-spyder) ")
