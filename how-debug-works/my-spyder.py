@@ -27,12 +27,14 @@ def main():
     print(remove_html_markup("'<b>foo</b>'"))
 
 # globals
-breakpoints = {9: True}
+breakpoints = {14: True}
+watchpoints = {'c': True}
 stepping = False
 
 def debug(command, my_locals):
     global stepping
     global breakpoints
+    global watchpoints
     
     if command.find(' ') > 0:
         arg = command.split(' ')[1]
@@ -51,14 +53,18 @@ def debug(command, my_locals):
                 print('{} = {}'.format(arg,repr(my_locals[arg])))
             else:
                 print('No such variable: {}'.format(arg))
-
         else:
             print(my_locals)
     elif command.startswith('b'):
-        if arg:
-            breakpoints[arg] = True
-        else:
+        try:
+            breakpoints[int(arg)] = True
+        except:
             print("You must supply a line number")
+    elif command.startswith('w'):    # watch variable
+        if arg:
+            watchpoints[arg] = True
+        else:
+            print('You must supply a variable name')
     elif command.startswith('q'):   # quit
         sys.exit(0)
     else:
@@ -66,10 +72,10 @@ def debug(command, my_locals):
         
     return False
 
-commands = ["b 5", "c", "c", "q"]
+commands = ["w out", "c", "c", "c", "c", "c", "c", "q"]
 
 def input_command():
-    #command = raw_input("(my-spyder) ")
+    #command = input("(my-spyder) ")
     global commands
     command = commands.pop(0)
     return command
@@ -87,6 +93,13 @@ def traceit(frame, event, trace_arg):
     return traceit
 
 # Using the tracer
-sys.settrace(traceit)
-main()
-sys.settrace(None)
+#sys.settrace(traceit)
+#main()
+#sys.settrace(None)
+
+#Simple test 
+print(watchpoints)
+debug("w s", {'s': 'xyz', 'tag': False})
+print(watchpoints)
+#>>> {'c': True}
+#>>> {'c': True, 's': True}
